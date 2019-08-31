@@ -4,7 +4,7 @@ const path = require('path');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 const { generateMessage, generateLocationMessage } = require('./utils/messages');
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
+const { addUser, removeUser, getUser, getUsersInRoom, getRoomsInUse } = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,8 +21,8 @@ io.on('connection', (socket) => {
     console.log('New websocket connection!');
 
     //welcomeMessage is sent when a client connects; if we use io.emit() all the client should get the unchanged welcomeMessage
+    socket.emit('chatRooms', getRoomsInUse());
     
-      
     socket.on('join', ({ username, room}, callback) => {
     
         const { error, user } = addUser({id: socket.id, username, room});

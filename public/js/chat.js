@@ -4,7 +4,7 @@ const socket = io();
 const $messageForm = document.querySelector("#message-form");
 const $messageFormInput = $messageForm.querySelector("input");
 const $messageButton = $messageForm.querySelector("button");
-const $sendLocationButton = document.querySelector("#sendLocation");
+const $sendLocationButton = document.querySelector("#send-location");
 const $messages = document.querySelector("#messages");
 const $siderbar = document.querySelector("#sidebar");
 
@@ -58,7 +58,7 @@ socket.on("locationMessage", location => {
   console.log(location);
   const html = Mustache.render(locationMessageTemplate, {
     username: location.username,
-    myCurrentLocation: location.locationURL,
+    myCurrentLocation: location.locationUrl,
     createdAt: moment(location.createdAt).format("h:mm a")
   });
   $messages.insertAdjacentHTML("beforeend", html);

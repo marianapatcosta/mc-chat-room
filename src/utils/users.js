@@ -1,4 +1,5 @@
 const users = [];
+const rooms = [];
 
 const addUser = ({ id, username, room }) => {
     // clean the data
@@ -54,9 +55,19 @@ const getUsersInRoom = (room) => {
     return users.filter(user => user.room === room);
 }
 
+const getRoomsInUse = () => {
+    users.forEach(user => {
+        if (rooms.every(room => room !== user.room)) {
+            rooms.push(user.room);
+        }
+    })
+    return rooms;
+}
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    getRoomsInUse
 }
