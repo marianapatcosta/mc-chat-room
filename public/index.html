@@ -25,7 +25,7 @@
 
     <script id="room-selection-template" type="text/html">
       <select id='selected-room' form="join-form" onchange="getSelectedRoom(event)">
-          <option value='' disabled selected>Select an existing room</option>
+          <option id='placeholder-select' value='' disabled selected>Select an existing room</option>
           {{#rooms}}
           <option value='{{.}}'>{{.}}</option>
           {{/rooms}}
