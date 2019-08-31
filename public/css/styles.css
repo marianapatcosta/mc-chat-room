@@ -94,6 +94,10 @@ button:disabled {
     font-size: 12px;
 }
 
+#placeholder-select {
+    display: none;
+}
+
 /* Chat Page Layout */
 
 .chat {
