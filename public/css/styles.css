@@ -10,10 +10,6 @@ html {
     font-size: 16px;
 }
 
-input {
-    font-size: 14px;
-}
-
 body {
     line-height: 1.4;
     color: #333333;
@@ -33,8 +29,18 @@ label {
 
 input {
     border: 1px solid #eeeeee;
+    font-size: 14px;
     padding: 12px;
     outline: none;
+}
+
+select {
+    border: 1px solid #eeeeee;
+    color: #777;
+    font-size: 12px;
+    height: 35px;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
 button {
@@ -81,6 +87,11 @@ button:disabled {
 .centered-form input {
     margin-bottom: 16px;
     width: 100%;
+}
+
+.centered-form__new-room {
+    color: #777;
+    font-size: 12px;
 }
 
 /* Chat Page Layout */
