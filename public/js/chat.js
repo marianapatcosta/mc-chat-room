@@ -1,24 +1,32 @@
 const socket = io();
 
 // Elements
-const $messageForm = document.querySelector("#message-form");
-const $messageFormInput = $messageForm.querySelector("input");
-const $messageButton = $messageForm.querySelector("button");
-const $sendLocationButton = document.querySelector("#send-location");
-const $messages = document.querySelector("#messages");
-const $siderbar = document.querySelector("#sidebar");
+const $messageForm = document.querySelector('#message-form');
+const $messageFormInput = $messageForm.querySelector('input');
+const $messageButton = $messageForm.querySelector('button');
+const $sendLocationButton = document.querySelector('#send-location');
+const $messages = document.querySelector('#messages');
+const $siderbar = document.querySelector('#sidebar');
 
 // Templates
-const messageTemplate = document.querySelector("#message-template").innerHTML;
-const locationMessageTemplate = document.querySelector(
-  "#location-message-template"
-).innerHTML;
-const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
+const messageTemplate = document.querySelector('#message-template').innerHTML;
+const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML;
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 // Options
-const { username, room } = Qs.parse(location.search, {
+const validateQueryParams = () => {
+    console.log(location.search.split('&'))
+    console.log(location.search.split('&')[0].includes('username'))
+    console.log(location.search.split('&')[1].includes('room'))
+    if (location.search.split('&').length !== 2 && location.search.split('&')[0].includes('username') && location.search.split('&')[1].includes('room')){
+
+    }
+    
+}
+validateQueryParams()
+const { username, room } = (location.search.split('&').length === 2 && location.search.split('&')[0].includes('username') && location.search.split('&')[1].includes('room'))?Qs.parse(location.search, {
   ignoreQueryPrefix: true
-});
+}): alert('invalid params!');
 
 const autoscroll = () => {
     // New message element
@@ -43,29 +51,27 @@ const autoscroll = () => {
     }
 };
 
-socket.on("message", message => {
-  console.log(message);
+socket.on('message', message => {
   const html = Mustache.render(messageTemplate, {
     username: message.username,
     message: message.text,
-    createdAt: moment(message.createdAt).format("h:mm a")
+    createdAt: moment(message.createdAt).format('h:mm a')
   });
-  $messages.insertAdjacentHTML("beforeend", html);
+  $messages.insertAdjacentHTML('beforeend', html);
   autoscroll();
 });
 
 socket.on("locationMessage", location => {
-  console.log(location);
   const html = Mustache.render(locationMessageTemplate, {
     username: location.username,
     myCurrentLocation: location.locationUrl,
-    createdAt: moment(location.createdAt).format("h:mm a")
+    createdAt: moment(location.createdAt).format('h:mm a')
   });
-  $messages.insertAdjacentHTML("beforeend", html);
+  $messages.insertAdjacentHTML('beforeend', html);
   autoscroll();
 });
 
-socket.on("roomData", ({ room, users }) => {
+socket.on('roomData', ({ room, users }) => {
   const html = Mustache.render(sidebarTemplate, {
     room,
     users
@@ -73,47 +79,46 @@ socket.on("roomData", ({ room, users }) => {
   $siderbar.innerHTML = html;
 });
 
-$messageForm.addEventListener("submit", event => {
+$messageForm.addEventListener('submit', event => {
   event.preventDefault();
 
   //disable the form
-  $messageButton.setAttribute("disabled", "disabled");
+  $messageButton.setAttribute('disabled', 'disabled');
 
   const sentMessage = event.target.elements.message.value;
   socket.emit("sendMessage", sentMessage, error => {
     //re-enable the form
-    $messageButton.removeAttribute("disabled");
-    $messageFormInput.value = "";
+    $messageButton.removeAttribute('disabled');
+    $messageFormInput.value = '';
     $messageFormInput.focus();
 
     if (error) {
       return console.log(error);
     }
-    console.log("The message was delivered!");
   });
 });
 
-$sendLocationButton.addEventListener("click", () => {
+$sendLocationButton.addEventListener('click', () => {
   if (!navigator.geolocation) {
-    return alert("Geolocation is not supported by your browser!");
+    return alert('Geolocation is not supported by your browser!');
   }
 
-  $sendLocationButton.setAttribute("disabled", "disabled");
+  $sendLocationButton.setAttribute('disabled', 'disabled');
 
   navigator.geolocation.getCurrentPosition(position => {
-    console.log(position);
     socket.emit(
-      "sendLocation",
+      'sendLocation',
       {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       },
       () => {
-        $sendLocationButton.removeAttribute("disabled");
-        console.log("Location shared.");
+        $sendLocationButton.removeAttribute('disabled');
       }
     );
-  });
+  }, error => {
+      alert('Location not found!')
+  }, { timeout: 10000});
 });
 
 socket.emit("join", { username, room }, error => {
