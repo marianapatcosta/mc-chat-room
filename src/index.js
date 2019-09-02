@@ -18,8 +18,6 @@ app.use(express.static(publicDirectoryPath));
 
 //connect is a built in event
 io.on('connection', (socket) => {
-    console.log('New websocket connection!');
-
     //welcomeMessage is sent when a client connects; if we use io.emit() all the client should get the unchanged welcomeMessage
     socket.emit('chatRooms', getRoomsInUse());
     
@@ -50,7 +48,7 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id);
 
         const filter = new Filter();
-        filter.addWords('merda', 'foda-se');
+        filter.addWords('merda', 'foda-se', 'caralho', 'piça');
         
         if (filter.isProfane(sentMessage)) {
             io.emit('message', filter.clean(sentMessage));
@@ -58,7 +56,7 @@ io.on('connection', (socket) => {
         }
 
         io.to(user.room).emit('message', generateMessage(user.username, sentMessage)); //emits event to all the connections
-        callback('Delivered'); 
+        callback(); 
     });
 
     socket.on('sendLocation', (coords, callback) => {
