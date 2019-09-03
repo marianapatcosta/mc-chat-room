@@ -14,19 +14,11 @@ const locationMessageTemplate = document.querySelector('#location-message-templa
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 // Options
-const validateQueryParams = () => {
-    console.log(location.search.split('&'))
-    console.log(location.search.split('&')[0].includes('username'))
-    console.log(location.search.split('&')[1].includes('room'))
-    if (location.search.split('&').length !== 2 && location.search.split('&')[0].includes('username') && location.search.split('&')[1].includes('room')){
-
-    }
-    
-}
-validateQueryParams()
-const { username, room } = (location.search.split('&').length === 2 && location.search.split('&')[0].includes('username') && location.search.split('&')[1].includes('room'))?Qs.parse(location.search, {
-  ignoreQueryPrefix: true
-}): alert('invalid params!');
+const { username, room } = 
+    (location.search.split('&').length === 2 && location.search.split('&')[0].includes('username') && location.search.split('&')[1].includes('room')) ?
+        Qs.parse(location.search, {
+            ignoreQueryPrefix: true
+        }) : (window.location.href='/') && alert('Invalid Parameters!');
 
 const autoscroll = () => {
     // New message element
