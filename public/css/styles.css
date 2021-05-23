@@ -1,4 +1,4 @@
-/* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 
 * {
     margin: 0;
@@ -6,60 +6,82 @@
     box-sizing: border-box;
 }
 
+
 html {
-    font-size: 16px;
+    font-size: 1.0rem;
 }
 
 body {
     line-height: 1.4;
-    color: #333333;
-    font-family: Helvetica, Arial, sans-serif;
+    color: #212529;
+		font-family: 'Lora', 'Helvetica Neue', serif;
 }
 
 h1 {
-    margin-bottom: 16px;
+	font-size: 1.25rem;
+	margin-bottom: 1.5rem;
 }
 
 label {
     display: block;
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: #777;
+    margin-bottom: 0.5rem;
 }
 
-input {
-    border: 1px solid #eeeeee;
-    font-size: 14px;
-    padding: 12px;
-    outline: none;
+input, select {
+		box-shadow: 0 0.0625rem 0.2rem #000;
+		border: none;
+		width: 100%;
+		padding: 0.6rem;
+		border-radius: 0.3rem;
+		-webkit-border-radius: 0.3rem;
+		-moz-border-radius: 0.3rem;
+		-ms-border-radius: 0.3rem;
+		-o-border-radius: 0.3rem;
+		color: inherit;
+		font: inherit;
+		margin-bottom: 1.5rem;
 }
 
-select {
-    border: 1px solid #eeeeee;
-    color: #777;
-    font-size: 12px;
-    height: 35px;
-    margin-bottom: 10px;
-    width: 100%;
+
+input:focus, select:focus {
+  outline: 0.125rem solid #591818;
+}
+
+input:focus:not(:focus-visible) , select:focus:not(:focus-visible) {
+  outline: none;
 }
 
 button {
-    cursor: pointer;
-    padding: 12px;
-    background: #7C5CBF;
-    border: none;
-    color: white;
-    font-size: 16px;
-    transition: background .3s ease;
+		cursor: pointer;
+		padding: 0.8rem;
+		background: #b33030;
+		border: none;
+		color: #ffffff;
+		font: inherit;
+		border-radius: 0.625rem;
+		-webkit-border-radius: 0.625rem;
+		-moz-border-radius: 0.625rem;
+		-ms-border-radius: 0.625rem;
+		-o-border-radius: 0.625rem;
+		box-shadow: 0 0.4rem #591818;
 }
 
 button:hover {
-    background: #6b47b8;
+    opacity: 0.75;
+}
+
+button:active {
+	box-shadow: 0 0.1rem #591818;
+	transform: translateY(0.25rem);
+	-webkit-transform: translateY(0.25rem);
+	-moz-transform: translateY(0.25rem);
+	-ms-transform: translateY(0.25rem);
+	-o-transform: translateY(0.25rem);
 }
 
 button:disabled {
     cursor: default;
-    background: #7c5cbf94;
+    opacity: 0.5;
 }
 
 /* Join Page Styles */
@@ -74,24 +96,23 @@ button:disabled {
 }
 
 .centered-form__box {
-    box-shadow: 0px 0px 17px 1px #1D1F26;
-    background: #F7F7FA;
-    padding: 24px;
-    width: 250px;
+		box-shadow: 0 0 1rem 0.0625rem #000;
+		background: #ffffff;
+		padding: 2.5rem;
+		width: 20rem;
+		border-radius: 0.625rem;
+		-webkit-border-radius: 0.625rem;
+		-moz-border-radius: 0.625rem;
+		-ms-border-radius: 0.625rem;
+		-o-border-radius: 0.625rem;
 }
 
 .centered-form button {
     width: 100%;
 }
 
-.centered-form input {
-    margin-bottom: 16px;
-    width: 100%;
-}
-
 .centered-form__new-room {
-    color: #777;
-    font-size: 12px;
+    color: #212529;
 }
 
 #placeholder-select {
@@ -107,9 +128,9 @@ button:disabled {
 .chat__sidebar {
     height: 100vh;
     color: white;
-    background: #333744;
-    width: 225px;
-    overflow-y: scroll
+    background: #212529;
+    width: 14rem;
+		overflow-y: auto;
 }
 
 /* Chat styles */
@@ -123,25 +144,28 @@ button:disabled {
 
 .chat__messages {
     flex-grow: 1;
-    padding: 24px 24px 0 24px;
-    overflow-y: scroll;
+    padding:1.5rem 1.5rem 0 1.5rem;
+    overflow-y: auto;
 }
 
 /* Message Styles */
 
 .message {
-    margin-bottom: 16px;   
+    margin-bottom: 1rem;   
+}
+
+.message__own {
+	text-align: right;
 }
 
 .message__name {
     font-weight: 600;
-    font-size: 14px;
-    margin-right: 8px;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
 }
 
 .message__meta {
-    color: #777;
-    font-size: 14px;
+    font-size: 0.8rem;
 }
 
 .message a {
@@ -153,46 +177,53 @@ button:disabled {
 .compose {
     display: flex;
     flex-shrink: 0;
-    margin-top: 16px;
-    padding: 24px;
+    margin-top: 1rem;
+    padding: 1.5rem;
 }
 
 .compose form {
     display: flex;
     flex-grow: 1;
-    margin-right: 16px;
+    margin-right: 0.5rem;
 }
 
 .compose input {
-    border: 1px solid #eeeeee;
-    width: 100%;
-    padding: 12px;
-    margin: 0 16px 0 0;
-    flex-grow: 1;
+	margin-bottom: 0;
+	margin-right: 0.5rem;
 }
 
 .compose button {
-    font-size: 14px;
+    font-size: 0.9rem;
+		padding: 0.6rem;
+		box-shadow: 0 0.3rem #591818;
 }
 
+.compose button:active {
+	box-shadow: 0 0.075rem #591818;
+	transform: translateY(0.25rem);
+	-webkit-transform: translateY(0.25rem);
+	-moz-transform: translateY(0.25rem);
+	-ms-transform: translateY(0.25rem);
+	-o-transform: translateY(0.25rem);
+}
 /* Chat Sidebar Styles */
 
 .room-title {
     font-weight: 400;
-    font-size: 22px;
-    background: #2c2f3a;
-    padding: 24px;   
+    font-size: 1.35rem;
+    padding: 1.5rem;   
+		color: #b33030;
 }
 
 .list-title {
     font-weight: 500;
-    font-size: 18px;
-    margin-bottom: 4px;
-    padding: 12px 24px 0 24px;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    padding: 0.75rem 1.5rem 0 1.5rem;
 }
 
 .users {
     list-style-type: none;
     font-weight: 300;
-    padding: 12px 24px 0 24px;
+    padding: 0.75rem 1.5rem 0 1.5rem;
 }

@@ -14,10 +14,6 @@ socket.on('chatRooms', (rooms) => {
       $roomSelection.innerHTML = html;
 });
 
-/* $roomSelection.addEventListener('change', event =>{
-    room.value = event.target.value
-}) */
-
 function getSelectedRoom(event) {
    room.value = event.target.value
 }
