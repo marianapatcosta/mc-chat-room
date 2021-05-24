@@ -1,9 +1,9 @@
-const emoji = require("node-emoji");
-const { smilesToEmojis } = require("../constants");
+const emoji = require('node-emoji');
+const { SMILES_TO_EMOJIS } = require('../constants');
 
 const convertToEmoji = message => {
-    let smiles = Object.keys(smilesToEmojis);
-    smiles.forEach(smile => (message = message.replace(smile, smilesToEmojis[smile])));
+    let smiles = Object.keys(SMILES_TO_EMOJIS);
+    smiles.forEach(smile => (message = message.replace(smile, SMILES_TO_EMOJIS[smile])));
     return message;
 };
   
@@ -12,19 +12,24 @@ const generateMessage = (username, text) => {
     return {
         username,
         text,
-        createdAt: new Date().getTime()
+        createdAt: new Date().getTime(),
     };
 };
 
-const generateLocationMessage = (username, locationUrl) => {
-  return {
+const generateLocationMessage = (username, locationUrl) => ({
     username,
     locationUrl,
     createdAt: new Date().getTime()
-  };
-};
+});
+
+const generateImageMessage = (username, imageSrc) => ({
+    username,
+    imageSrc,
+    createdAt: new Date().getTime()
+});
 
 module.exports = {
   generateMessage,
-  generateLocationMessage
+  generateLocationMessage,
+  generateImageMessage
 };

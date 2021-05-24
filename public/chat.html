@@ -14,16 +14,31 @@
         <div id='messages' class='chat__messages'></div>
         <div class='compose'>
           <form id='message-form'>
-            <input name='message' placeholder='type your message' required autocomplete='off' oninvalid="setCustomValidity('Please enter a message.')"/>
-            <button>Send</button>
+            <input name='message' placeholder='type your message' required autocomplete='off' oninvalid='setCustomValidity('Please enter a message.')'/>
+            <button aria-label='click to send your message'>
+              <img src='/svg/share.svg' alt='send icon'/>
+              <span class='tooltip'>send</span>
+            </button>
           </form>
-          <button id='send-location'>Send Location</button>
+          <button id='send-location' aria-label='click to send your location'>
+            <img src='/svg/pin.svg' alt='location icon'/>
+            <span class='tooltip'>send location</span>
+          </button>
+          <button id='upload' aria-label='click to upload an image'>
+            <img src='/svg/image.svg' alt='upload image icon'/>
+            <span class='tooltip'>upload image</span>
+          </button>
+          <button id='record' aria-label='click to record and send a voice message'>
+            <img src='/svg/microphone.svg' alt='record icon'/>
+            <span class='tooltip'>record</span>
+          </button>
+          <input type='file' id='upload-input'  accept='.gif, .jpeg, .jpg, .png, .svg'/>
         </div>
       </div>
     </div>
 
     <script id='message-template' type='text/html'>
-      <div class='message {{#isOwnMessage}} message__own {{/isOwnMessage}}'>
+      <div class='message {{#isSentMessage}} message__sent {{/isSentMessage}}'>
           <p>
               <span class='message__name'>{{username}}</span>
               <span class='message__meta'>{{createdAt}}</span>
@@ -33,12 +48,24 @@
     </script>
 
     <script id='location-message-template' type='text/html'>
-      <div class='message {{#isOwnMessage}} message__own {{/isOwnMessage}}'>
+      <div class='message {{#isSentMessage}} message__sent {{/isSentMessage}}'>
         <p>
             <span class='message__name'>{{username}}</span>
             <span class='message__meta'>{{createdAt}}</span>
         </p>
-          <p>{{createdAt}} - <a href='{{myCurrentLocation}}' target='_blank'> My Current Location</a></p>
+        <a href='{{myCurrentLocation}}' target='_blank' rel='noopener noreferrer' > My Current Location</a>
+      </div>
+    </script>
+
+    <script id='image-message-template' type='text/html'>
+      <div class='message {{#isSentMessage}} message__sent {{/isSentMessage}}'>
+        <p>
+            <span class='message__name'>{{username}}</span>
+            <span class='message__meta'>{{createdAt}}</span>
+        </p>
+        <div class='message__image'>
+          <img  src='{{imageSrc}}' />
+        </div>
       </div>
     </script>
 
