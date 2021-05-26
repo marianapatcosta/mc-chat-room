@@ -96,7 +96,7 @@ const getMedia = async (constraints) => {
 
 const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 
-const onSwitchCamera =  () => { 
+const onSwitchCamera =  (mediaRecorder) => { 
   isFrontCamera = !isFrontCamera; 
   stopStream(mediaRecorder.stream);
   onRecordVideo();

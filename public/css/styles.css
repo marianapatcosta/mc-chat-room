@@ -363,7 +363,7 @@ audio::-webkit-media-controls-panel{
 	align-self: flex-end;
 	align-content: center;
 	justify-content: space-between;
-	display: none;
+	display: flex;
 }
 
 @keyframes scaleUp {
