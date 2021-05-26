@@ -13,18 +13,18 @@
         <h1>Join a chat room</h1>
         <form id='join-form' action='/chat.html'>
           <label>Your username</label>
-          <input type='text' name='username' placeholder='Username' autocomplete='off' required oninvalid='this.setCustomValidity('Please enter username.')'/>
+          <input type='text' name='username' placeholder='Username' autocomplete='off' required oninvalid="this.setCustomValidity('Please enter username.')"/>
           <label>Choose a room</label>
           <div id='room-selection' class='center-form__selection'></div>
           <label for='room'>or type a new room to join in</label>
-          <input id='room' type='text' name='room' placeholder='Room' autocomplete='off' required oninvalid='this.setCustomValidity('Please enter a room to join in.')'/>
+          <input id='room' type='text' name='room' placeholder='Room' autocomplete='off' required oninvalid="this.setCustomValidity('Please enter a room to join in.')"/>
           <button>Join</button>
         </form>
       </div>
     </div>
 
     <script id='room-selection-template' type='text/html'>
-      <select id='selected-room' form='join-form' onchange='getSelectedRoom(event)' disabled='!rooms.length'>
+      <select id='selected-room' form='join-form' onchange='getSelectedRoom(event)'>
           <option id='placeholder-select' value='' disabled selected>Select an existing room</option>
           {{#rooms}}
           <option value='{{.}}'>{{.}}</option>
