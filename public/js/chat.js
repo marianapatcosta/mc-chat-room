@@ -12,10 +12,12 @@ const $recordVideoButton = document.querySelector('#record-video');
 const $pauseRecordingButton = document.querySelector('#pause-recording');
 const $resumeRecordingButton = document.querySelector('#resume-recording');
 const $stopRecordingButton = document.querySelector('#stop-recording');
+const $switchCameraButton = document.querySelector('#switch-camera');
 const $uploadInput = document.querySelector('#upload-input');
 const $messages = document.querySelector('#messages');
 const $sidebar = document.querySelector('#sidebar');
 const $recordingCard = document.querySelector('.recording');
+let isFrontCamera = true;
 let $imageMessages;
 let $videoMessages;
 const IMAGE_FILE_TYPES = {
@@ -97,7 +99,12 @@ const getMedia = async (constraints) => {
 
 const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 
-const onStartRecording = (mediaRecorder) => {
+const onStartRecording = (mediaRecorder, isVideo) => {
+  if (isTouchDevice() && isVideo) {
+    $switchCameraButton.style.display = 'flex';
+    $recordVideoButton.click();
+    $switchCameraButton.addEventListener('click', () => isFrontCamera = !isFrontCamera);
+  }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
   $recordAudioButton.disabled = true;
@@ -117,8 +124,12 @@ const onResumeRecording = () => {
   $pauseRecordingButton.style.display = 'inline-block';
 }
 
-const onStopRecording = (mediaRecorder) => {
+const onStopRecording = (mediaRecorder, isVideo) => {
   stopStream(mediaRecorder.stream);
+  if (isTouchDevice() && isVideo) {
+    $switchCameraButton.style.display = 'none';
+    $switchCameraButton.removeEventListener('click', () => isFrontCamera = !isFrontCamera);
+  } 
   $recordingCard.style.display = 'none';
   $recordAudioButton.disabled = false;
   $recordVideoButton.disabled = false;
@@ -283,20 +294,20 @@ $recordAudioButton.addEventListener('click', async () => {
 });
 
 $recordVideoButton.addEventListener('click', async () => {
-  const constraints = isTouchDevice() ? {video: {facingMode: 'user'}} : { video: true, audio: true }
+  const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
   
   const mediaStream = await getMedia(constraints);
   const mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
 
-  mediaRecorder.onstart = () => onStartRecording(mediaRecorder);
+  mediaRecorder.onstart = () => onStartRecording(mediaRecorder, true);
   mediaRecorder.onpause = onPauseRecording;
   mediaRecorder.onresume = onResumeRecording;
   mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
   mediaRecorder.onstop = () => {
     const videoBlob = new Blob(chunks, { 'type' : 'video/mp4; codecs=opus' }); 
     socket.emit('sendVideoMessage', URL.createObjectURL(videoBlob));
-    onStopRecording(mediaRecorder);
+    onStopRecording(mediaRecorder, true);
   };
 
   // Start recording
