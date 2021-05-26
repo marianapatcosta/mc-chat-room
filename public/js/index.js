@@ -1,21 +1,24 @@
 const socket = io();
 
 // Elements
-const $roomSelection = document.querySelector('#room-selection');
+const $selectElement = document.querySelector('#selected-room');
 const room = document.getElementById('room');
 
-// Templates
-const roomSelectionTemplate = document.querySelector('#room-selection-template').innerHTML;
-
 socket.on('chatRooms', (rooms) => {
-  const html = Mustache.render(roomSelectionTemplate, {
-    rooms
-  });
-  $roomSelection.innerHTML = html;
-  const $selectElement = document.querySelector('#selected-room');
+  const placeholder = document.createElement("option");
+  placeholder.innerText = 'Select an existing room';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  placeholder.hidden = true;
+  placeholder.value = '';
+  $selectElement.append(placeholder);
+  for (const room of rooms) {
+    const element = document.createElement("option");
+    element.innerText = room;
+    element.value = room;
+    $selectElement.append(element);
+  }
   $selectElement.disabled = !rooms.length ? true : false
 });
 
-function getSelectedRoom(event) {
-   room.value = event.target.value
-}
+const getSelectedRoom = (event) => room.value = event.target.value;
