@@ -20,6 +20,7 @@ const $recordingCard = document.querySelector('.recording');
 let isFrontCamera = true;
 let $imageMessages;
 let $videoMessages;
+let mediaRecorder;
 const IMAGE_FILE_TYPES = {
   GIF: '.gif',
   JPEG: '.jpeg',
@@ -96,24 +97,27 @@ const getMedia = async (constraints) => {
 
 const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 
-const onSwitchCamera =  (mediaRecorder) => { 
+const onSwitchCamera = () => { 
+  $switchCameraButton.removeEventListener('click', onSwitchCamera);
   isFrontCamera = !isFrontCamera; 
   stopStream(mediaRecorder.stream);
   onRecordVideo();
 };
+ 
+onPauseMediaRecord = () => mediaRecorder.pause();
 
-const onStartRecording = (mediaRecorder, isVideo) => {
+onResumeMediaRecord = () => mediaRecorder.resume();
+
+onStopMediaRecord = () => mediaRecorder.stop();
+
+const onStartRecording = (isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
-    $switchCameraButton.addEventListener('click', (mediaRecorder) => onSwitchCamera(mediaRecorder));
   }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
   $recordAudioButton.disabled = true;
   $recordVideoButton.disabled = true;
-  $pauseRecordingButton.addEventListener('click', () => mediaRecorder.pause());
-  $resumeRecordingButton.addEventListener('click', () => mediaRecorder.resume());
-  $stopRecordingButton.addEventListener('click', () => mediaRecorder.stop());
 }
 
 const onPauseRecording = () => {
@@ -126,20 +130,16 @@ const onResumeRecording = () => {
   $pauseRecordingButton.style.display = 'inline-block';
 }
 
-const onStopRecording = (mediaRecorder, isVideo) => {
+const onStopRecording = (isVideo = false) => {
   stopStream(mediaRecorder.stream);
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'none';
-    $switchCameraButton.removeEventListener('click', (mediaRecorder) => onSwitchCamera(mediaRecorder));
   } 
   $recordingCard.style.display = 'none';
   $recordAudioButton.disabled = false;
   $recordVideoButton.disabled = false;
   $pauseRecordingButton.style.display = 'inline-block';
   $resumeRecordingButton.style.display = 'inline-block';
-  $pauseRecordingButton.removeEventListener('click', () => mediaRecorder.pause());
-  $resumeRecordingButton.removeEventListener('click', () => mediaRecorder.resume());
-  $stopRecordingButton.removeEventListener('click', () => mediaRecorder.stop());
 }
 
 // socket handlers
@@ -213,6 +213,11 @@ socket.emit('join', { username, room }, error => {
 
 // listeners
 
+$switchCameraButton.addEventListener('click', onSwitchCamera);
+$pauseRecordingButton.addEventListener('click', onPauseMediaRecord);
+$resumeRecordingButton.addEventListener('click', onResumeMediaRecord);
+$stopRecordingButton.addEventListener('click', onStopMediaRecord);
+
 $messageForm.addEventListener('submit', event => {
   event.preventDefault();
   $messageButton.setAttribute('disabled', 'disabled');
@@ -278,7 +283,7 @@ $uploadInput.addEventListener('change', (event) => {
 
 $recordAudioButton.addEventListener('click', async () => {
   const mediaStream = await getMedia({ audio: true });
-  const mediaRecorder = new MediaRecorder(mediaStream)
+  mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
 
   mediaRecorder.onstart = () => onStartRecording(mediaRecorder);
@@ -287,18 +292,19 @@ $recordAudioButton.addEventListener('click', async () => {
   mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
   mediaRecorder.onstop = () => {
     const audioBlob = new Blob(chunks, {'type' : 'audio/mp3; codecs=opus'});
-    socket.emit('sendAudioMessage', URL.createObjectURL(audioBlob));
-    onStopRecording(mediaRecorder);
+   //socket.emit('sendAudioMessage', URL.createObjectURL(audioBlob));
+    const reader = new FileReader();
+    reader.onloadend = () => socket.emit('sendAudioMessage', reader.result);
+    reader.readAsDataURL(audioBlob);
+    onStopRecording();
   };
-
-  // Start recording
   mediaRecorder.start();
 });
 
 const onRecordVideo = async () => {
   const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
   const mediaStream = await getMedia(constraints);
-  const mediaRecorder = new MediaRecorder(mediaStream)
+  mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
 
   mediaRecorder.onstart = () => onStartRecording(mediaRecorder, true);
@@ -307,11 +313,11 @@ const onRecordVideo = async () => {
   mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
   mediaRecorder.onstop = () => {
     const videoBlob = new Blob(chunks, { 'type' : 'video/mp4; codecs=opus' }); 
-    socket.emit('sendVideoMessage', URL.createObjectURL(videoBlob));
-    onStopRecording(mediaRecorder, true);
+    const reader = new FileReader();
+    reader.onloadend = () => socket.emit('sendVideoMessage', reader.result);
+    reader.readAsDataURL(videoBlob);
+    onStopRecording(true);
   };
-
-  // Start recording
   mediaRecorder.start();
 }
 
