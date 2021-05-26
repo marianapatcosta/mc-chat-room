@@ -102,8 +102,11 @@ const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 const onStartRecording = (mediaRecorder, isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
-/*     $recordVideoButton.click(); */
-    $switchCameraButton.addEventListener('click', () =>{ isFrontCamera = !isFrontCamera; alert(isFrontCamera ? 'true' : 'false')});
+    $switchCameraButton.addEventListener('click', () => { 
+      isFrontCamera = !isFrontCamera; alert(isFrontCamera ? 'true' : 'false');
+      stopStream(mediaRecorder.stream);
+      onRecordVideo();
+    });
   }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
@@ -293,8 +296,8 @@ $recordAudioButton.addEventListener('click', async () => {
   mediaRecorder.start();
 });
 
-$recordVideoButton.addEventListener('click', async () => {
-  const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
+const onRecordVideo = async () => {
+    const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
   
   const mediaStream = await getMedia(constraints);
   const mediaRecorder = new MediaRecorder(mediaStream)
@@ -312,4 +315,6 @@ $recordVideoButton.addEventListener('click', async () => {
 
   // Start recording
   mediaRecorder.start();
-});
+}
+
+$recordVideoButton.addEventListener('click', onRecordVideo);
