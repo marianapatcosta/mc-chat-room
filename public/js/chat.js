@@ -96,14 +96,16 @@ const getMedia = async (constraints) => {
 
 const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 
+const onSwitchCamera =  () => { 
+  isFrontCamera = !isFrontCamera; 
+  stopStream(mediaRecorder.stream);
+  onRecordVideo();
+};
+
 const onStartRecording = (mediaRecorder, isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
-    $switchCameraButton.addEventListener('click', () => { 
-      isFrontCamera = !isFrontCamera; 
-      stopStream(mediaRecorder.stream);
-      onRecordVideo();
-    });
+    $switchCameraButton.addEventListener('click', onSwitchCamera);
   }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
@@ -128,7 +130,7 @@ const onStopRecording = (mediaRecorder, isVideo) => {
   stopStream(mediaRecorder.stream);
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'none';
-    $switchCameraButton.removeEventListener('click', () => isFrontCamera = !isFrontCamera);
+    $switchCameraButton.removeEventListener('click', onSwitchCamera);
   } 
   $recordingCard.style.display = 'none';
   $recordAudioButton.disabled = false;
