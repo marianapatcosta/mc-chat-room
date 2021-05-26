@@ -6,7 +6,6 @@
 	box-sizing: border-box;
 }
 
-
 html {
   font-size: 1.0rem;
 }
@@ -94,7 +93,7 @@ button:disabled {
 
 audio {
 	height: 2.5rem;
-	width: 15rem;
+	width: 13rem;
 	background-color:#b33030;
 	border-radius: 0.625rem;
 	-webkit-border-radius: 0.625rem;
@@ -193,7 +192,7 @@ audio::-webkit-media-controls-panel{
 }
 
 .message__image img, .message__video video {
-	width: 10rem;
+	width: 13rem;
 	cursor: zoom-in;
 	animation: scaleDown 0.1s forwards;
 	-webkit-animation: scaleDown 0.1s forwards;
@@ -354,6 +353,17 @@ audio::-webkit-media-controls-panel{
 	list-style-type: none;
 	font-weight: 300;
 	padding: 0.75rem 1.5rem 0 1.5rem;
+}
+
+#switch-camera {
+	width: 5.5rem;
+	padding: 0.3rem 0.6rem;
+	height: fit-content;
+	margin-top: 1rem;
+	align-self: flex-end;
+	align-content: center;
+	justify-content: space-between;
+	display: none;
 }
 
 @keyframes scaleUp {
