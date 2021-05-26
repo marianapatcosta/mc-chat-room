@@ -105,7 +105,7 @@ const onSwitchCamera =  () => {
 const onStartRecording = (mediaRecorder, isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
-    $switchCameraButton.addEventListener('click', onSwitchCamera);
+    $switchCameraButton.addEventListener('click', (mediaRecorder) => onSwitchCamera(mediaRecorder));
   }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
@@ -130,7 +130,7 @@ const onStopRecording = (mediaRecorder, isVideo) => {
   stopStream(mediaRecorder.stream);
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'none';
-    $switchCameraButton.removeEventListener('click', onSwitchCamera);
+    $switchCameraButton.removeEventListener('click', (mediaRecorder) => onSwitchCamera(mediaRecorder));
   } 
   $recordingCard.style.display = 'none';
   $recordAudioButton.disabled = false;
