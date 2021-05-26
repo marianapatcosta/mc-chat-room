@@ -286,7 +286,7 @@ $recordAudioButton.addEventListener('click', async () => {
   mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
 
-  mediaRecorder.onstart = () => onStartRecording(mediaRecorder);
+  mediaRecorder.onstart = () => onStartRecording();
   mediaRecorder.onpause = onPauseRecording;
   mediaRecorder.onresume = onResumeRecording;
   mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
@@ -307,7 +307,7 @@ const onRecordVideo = async () => {
   mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
 
-  mediaRecorder.onstart = () => onStartRecording(mediaRecorder, true);
+  mediaRecorder.onstart = () => onStartRecording(true);
   mediaRecorder.onpause = onPauseRecording;
   mediaRecorder.onresume = onResumeRecording;
   mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
