@@ -102,8 +102,8 @@ const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 const onStartRecording = (mediaRecorder, isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
-    $recordVideoButton.click();
-    $switchCameraButton.addEventListener('click', () => isFrontCamera = !isFrontCamera);
+/*     $recordVideoButton.click(); */
+    $switchCameraButton.addEventListener('click', () =>{ isFrontCamera = !isFrontCamera; alert(isFrontCamera ? 'true' : 'false')});
   }
   $recordingCard.style.display = 'flex';
   $resumeRecordingButton.style.display = 'none';
