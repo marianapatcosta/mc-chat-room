@@ -81,16 +81,13 @@ const handleVideoMessages = () => {
 
 const handleInsertHtml = (html, isSender) => {
   $messages.insertAdjacentHTML('beforeend', html);
-  $messages.lastElementChild.scrollIntoView(false)
-  if (!isSender) {
-    alertSound.play();
-  }
+  $messages.lastElementChild.scrollIntoView(false);
+  !isSender && alertSound.play();
 }
 
 const getMedia = async (constraints) => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    permissiongiven = 1
     return stream;
   } catch (error) {
     alert('It was not possible to access to your camera and/or microphone')
@@ -103,7 +100,7 @@ const onStartRecording = (mediaRecorder, isVideo) => {
   if (isTouchDevice() && isVideo) {
     $switchCameraButton.style.display = 'flex';
     $switchCameraButton.addEventListener('click', () => { 
-      isFrontCamera = !isFrontCamera; alert(isFrontCamera ? 'true' : 'false');
+      isFrontCamera = !isFrontCamera; 
       stopStream(mediaRecorder.stream);
       onRecordVideo();
     });
@@ -297,8 +294,10 @@ $recordAudioButton.addEventListener('click', async () => {
 });
 
 const onRecordVideo = async () => {
-    const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
-  
+  const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
+  alert(JSON.stringify(navigator.mediaDevices.enumerateDevices()) );
+  const devices = await navigator.mediaDevices.enumerateDevices()
+  console.log(devices)
   const mediaStream = await getMedia(constraints);
   const mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
