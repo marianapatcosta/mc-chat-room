@@ -295,9 +295,6 @@ $recordAudioButton.addEventListener('click', async () => {
 
 const onRecordVideo = async () => {
   const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
-  alert(JSON.stringify(navigator.mediaDevices.enumerateDevices()) );
-  const devices = await navigator.mediaDevices.enumerateDevices()
-  console.log(devices)
   const mediaStream = await getMedia(constraints);
   const mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
