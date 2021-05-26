@@ -22,14 +22,14 @@ const generateLocationMessage = (username, locationUrl) => ({
     createdAt: new Date().getTime()
 });
 
-const generateImageMessage = (username, imageSrc) => ({
+const generateMediaMessage = (username, src) => ({
     username,
-    imageSrc,
+    src,
     createdAt: new Date().getTime()
 });
 
 module.exports = {
   generateMessage,
   generateLocationMessage,
-  generateImageMessage
+  generateMediaMessage
 };

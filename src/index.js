@@ -3,7 +3,7 @@ const http = require('http');
 const path = require('path');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
-const { generateMessage, generateLocationMessage, generateImageMessage } = require('./utils/messages');
+const { generateMessage, generateLocationMessage, generateMediaMessage } = require('./utils/messages');
 const { addUser, removeUser, getUser, getUsersInRoom, getRoomsInUse } = require('./utils/users');
 const { CENSURED_WORDS } = require('./constants');
 
@@ -45,8 +45,7 @@ socketIo.on('connection', socket => {
   });
 
   socket.on('sendMessage', (sentMessage, callback) => {
-    const user = getUser(socket.id);
-
+    const { username, room } = getUser(socket.id);
     const filter = new Filter();
     filter.addWords(...CENSURED_WORDS);
 
@@ -55,26 +54,35 @@ socketIo.on('connection', socket => {
       return callback('Profanity is not allowed!');
     }
 
-    socketIo.to(user.room).emit('message', generateMessage(user.username, sentMessage));
+    socketIo.to(room).emit('message', generateMessage(username, sentMessage));
     callback();
   });
 
   socket.on('sendLocation', (coords, callback) => {
-    const user = getUser(socket.id);
-
-    socketIo.to(user.room).emit(
+    const { username, room } = getUser(socket.id);
+    socketIo.to(room).emit(
       'locationMessage',
       generateLocationMessage(
-        user.username,
+        username,
         `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
       )
     );
     callback();
   });
 
-  socket.on('sendImage', (imageUrl) => {
-    const user = getUser(socket.id);
-    socketIo.to(user.room).emit('imageMessage', generateImageMessage(user.username, imageUrl));
+  socket.on('sendImageMessage', (imageUrl) => {
+    const { username, room } = getUser(socket.id);
+    socketIo.to(room).emit('imageMessage', generateMediaMessage(username, imageUrl));
+  });
+
+  socket.on('sendAudioMessage', (audioUrl) => {
+    const { username, room } = getUser(socket.id);
+    socketIo.to(room).emit('audioMessage', generateMediaMessage(username, audioUrl));
+  });
+
+  socket.on('sendVideoMessage', (videoUrl) => {
+    const { username, room } = getUser(socket.id);
+    socketIo.to(room).emit('videoMessage', generateMediaMessage(username, videoUrl));
   });
 
   //disconnect is a built in event
@@ -82,10 +90,11 @@ socketIo.on('connection', socket => {
     const user = removeUser(socket.id);
 
     if (user) {
-      socketIo.to(user.room).emit('message',generateMessage('Admin', `${user.username} has left!`));
-      socketIo.to(user.room).emit('roomData', {
-        room: user.room,
-        users: getUsersInRoom(user.room)
+      const { username, room } = user;
+      socketIo.to(room).emit('message',generateMessage('Admin', `${username} has left!`));
+      socketIo.to(room).emit('roomData', {
+        room,
+        users: getUsersInRoom(room)
       });
     }
   });

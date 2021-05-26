@@ -7,11 +7,17 @@ const $messageFormInput = $messageForm.querySelector('input');
 const $messageButton = $messageForm.querySelector('button');
 const $sendLocationButton = document.querySelector('#send-location');
 const $uploadButton = document.querySelector('#upload');
-const $recordButton = document.querySelector('#record');
+const $recordAudioButton = document.querySelector('#record-audio');
+const $recordVideoButton = document.querySelector('#record-video');
+const $pauseRecordingButton = document.querySelector('#pause-recording');
+const $resumeRecordingButton = document.querySelector('#resume-recording');
+const $stopRecordingButton = document.querySelector('#stop-recording');
 const $uploadInput = document.querySelector('#upload-input');
 const $messages = document.querySelector('#messages');
 const $sidebar = document.querySelector('#sidebar');
+const $recordingCard = document.querySelector('.recording');
 let $imageMessages;
+let $videoMessages;
 const IMAGE_FILE_TYPES = {
   GIF: '.gif',
   JPEG: '.jpeg',
@@ -28,6 +34,12 @@ const locationMessageTemplate = document.querySelector(
 const imageMessageTemplate = document.querySelector(
   '#image-message-template'
 ).innerHTML;
+const audioMessageTemplate = document.querySelector(
+  '#audio-message-template'
+).innerHTML;
+const videoMessageTemplate = document.querySelector(
+  '#video-message-template'
+).innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 // Options
@@ -41,6 +53,8 @@ const { username, room } =
     : (location.href = '/') && alert('Invalid Parameters!');
 
 // helper methods 
+const isTouchDevice = () => matchMedia('(hover: none)').matches;
+
 const handleImageMessages = () => {
   $imageMessages = document.getElementsByClassName('message__image');
   const newImageElement = $imageMessages[$imageMessages.length -1];
@@ -52,6 +66,17 @@ const handleImageMessages = () => {
   });
 };
 
+const handleVideoMessages = () => {
+  $videoMessages = document.getElementsByClassName('message__video');
+  const newVideoElement = $videoMessages[$videoMessages.length -1];
+  newVideoElement.addEventListener('click', () => {
+    if (newVideoElement.classList.contains('message__video--zoomed')) {
+      return newVideoElement.classList.remove('message__video--zoomed');
+    }
+    newVideoElement.classList.add('message__video--zoomed');
+  });
+};
+
 const handleInsertHtml = (html, isSender) => {
   $messages.insertAdjacentHTML('beforeend', html);
   $messages.lastElementChild.scrollIntoView(false)
@@ -60,38 +85,102 @@ const handleInsertHtml = (html, isSender) => {
   }
 }
 
+const getMedia = async (constraints) => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    permissiongiven = 1
+    return stream;
+  } catch (error) {
+    alert('It was not possible to access to your camera and/or microphone')
+  }
+}
+
+const stopStream = stream => stream.getTracks().forEach(track => track.stop());
+
+const onStartRecording = (mediaRecorder) => {
+  $recordingCard.style.display = 'flex';
+  $resumeRecordingButton.style.display = 'none';
+  $recordAudioButton.disabled = true;
+  $recordVideoButton.disabled = true;
+  $pauseRecordingButton.addEventListener('click', () => mediaRecorder.pause());
+  $resumeRecordingButton.addEventListener('click', () => mediaRecorder.resume());
+  $stopRecordingButton.addEventListener('click', () => mediaRecorder.stop());
+}
+
+const onPauseRecording = () => {
+  $resumeRecordingButton.style.display = 'inline-block';
+  $pauseRecordingButton.style.display = 'none';
+}
+
+const onResumeRecording = () => {
+  $resumeRecordingButton.style.display = 'none';
+  $pauseRecordingButton.style.display = 'inline-block';
+}
+
+const onStopRecording = (mediaRecorder) => {
+  stopStream(mediaRecorder.stream);
+  $recordingCard.style.display = 'none';
+  $recordAudioButton.disabled = false;
+  $recordVideoButton.disabled = false;
+  $pauseRecordingButton.style.display = 'inline-block';
+  $resumeRecordingButton.style.display = 'inline-block';
+  $pauseRecordingButton.removeEventListener('click', () => mediaRecorder.pause());
+  $resumeRecordingButton.removeEventListener('click', () => mediaRecorder.resume());
+  $stopRecordingButton.removeEventListener('click', () => mediaRecorder.stop());
+}
+
 // socket handlers
 
-socket.on('message', message => {
+socket.on('message', ({ username: senderUsername, text, createdAt, src })  => {
   const html = Mustache.render(messageTemplate, {
-    username: message.username,
-    message: message.text,
-    createdAt: moment(message.createdAt).format('h:mm a'),
-    isSentMessage: username === message.username
+    username: senderUsername,
+    message: text,
+    createdAt: moment(createdAt).format('h:mm a'),
+    isSentMessage: username === senderUsername
   });
-  handleInsertHtml(html, username === message.username);
+  handleInsertHtml(html, username === senderUsername);
 });
 
-socket.on('locationMessage', location => {
+socket.on('locationMessage', ({ username: senderUsername, locationUrl, createdAt })  => {
   const html = Mustache.render(locationMessageTemplate, {
-    username: location.username,
-    myCurrentLocation: location.locationUrl,
-    createdAt: moment(location.createdAt).format('h:mm a'),
-    isSentMessage: username === location.username
+    username: senderUsername,
+    myCurrentLocation: locationUrl,
+    createdAt: moment(createdAt).format('h:mm a'),
+    isSentMessage: username === senderUsername
   });
-  handleInsertHtml(html, username === message.username);
+  handleInsertHtml(html, username === senderUsername);
 });
 
-socket.on('imageMessage', message => {
+socket.on('imageMessage', ({ username: senderUsername, createdAt, src }) => {
   const html = Mustache.render(imageMessageTemplate, {
-    username: message.username,
-    message: message.text,
-    createdAt: moment(message.createdAt).format('h:mm a'),
-    isSentMessage: username === message.username,
-    imageSrc: message.imageSrc
+    username: senderUsername,
+    createdAt: moment(createdAt).format('h:mm a'),
+    isSentMessage: username === senderUsername,
+    imageSrc: src
   });
-  handleInsertHtml(html, username === message.username);
+  handleInsertHtml(html, username === senderUsername);
   handleImageMessages();
+});
+
+socket.on('audioMessage', ({ username: senderUsername, createdAt, src }) => {
+  const html = Mustache.render(audioMessageTemplate, {
+    username: senderUsername,
+    createdAt: moment(createdAt).format('h:mm a'),
+    isSentMessage: username === username,
+    audioSrc: src
+  });
+  handleInsertHtml(html, username === senderUsername);
+});
+
+socket.on('videoMessage', ({ username: senderUsername, createdAt, src }) => {
+  const html = Mustache.render(videoMessageTemplate, {
+    username: senderUsername,
+    createdAt: moment(createdAt).format('h:mm a'),
+    isSentMessage: username === username,
+    videoSrc: src
+  });
+  handleInsertHtml(html, username === senderUsername);
+  handleVideoMessages();
 });
 
 socket.on('roomData', ({ room, users }) => {
@@ -162,7 +251,7 @@ $uploadInput.addEventListener('change', (event) => {
   if (!event.target.files[0]) return;
 
   const fileName = event.target.files[0].name;
-  const lastDot =  fileName.lastIndexOf('.');
+  const lastDot = fileName.lastIndexOf('.');
   const fileExtension = fileName.slice(lastDot);
 
   if (!Object.values(IMAGE_FILE_TYPES).includes(fileExtension)) {
@@ -170,12 +259,46 @@ $uploadInput.addEventListener('change', (event) => {
   }
 
   const reader = new FileReader();
-  reader.onloadend = () => {
-    socket.emit('sendImage', reader.result);
-  };
+  reader.onloadend = () => socket.emit('sendImageMessage', reader.result);
   reader.readAsDataURL(event.target.files[0]);
 });
 
-$recordButton.addEventListener('click', () => {
+$recordAudioButton.addEventListener('click', async () => {
+  const mediaStream = await getMedia({ audio: true });
+  const mediaRecorder = new MediaRecorder(mediaStream)
+  const chunks = [];
 
+  mediaRecorder.onstart = () => onStartRecording(mediaRecorder);
+  mediaRecorder.onpause = onPauseRecording;
+  mediaRecorder.onresume = onResumeRecording;
+  mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(chunks, {'type' : 'audio/mp3; codecs=opus'});
+    socket.emit('sendAudioMessage', URL.createObjectURL(audioBlob));
+    onStopRecording(mediaRecorder);
+  };
+
+  // Start recording
+  mediaRecorder.start();
+});
+
+$recordVideoButton.addEventListener('click', async () => {
+  const constraints = isTouchDevice() ? {video: {facingMode: 'user'}} : { video: true, audio: true }
+  
+  const mediaStream = await getMedia(constraints);
+  const mediaRecorder = new MediaRecorder(mediaStream)
+  const chunks = [];
+
+  mediaRecorder.onstart = () => onStartRecording(mediaRecorder);
+  mediaRecorder.onpause = onPauseRecording;
+  mediaRecorder.onresume = onResumeRecording;
+  mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+  mediaRecorder.onstop = () => {
+    const videoBlob = new Blob(chunks, { 'type' : 'video/mp4; codecs=opus' }); 
+    socket.emit('sendVideoMessage', URL.createObjectURL(videoBlob));
+    onStopRecording(mediaRecorder);
+  };
+
+  // Start recording
+  mediaRecorder.start();
 });

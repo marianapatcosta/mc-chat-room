@@ -91,6 +91,22 @@ button:disabled {
 	opacity: 0.5;
 }
 
+
+audio {
+	height: 2.5rem;
+	width: 15rem;
+	background-color:#b33030;
+	border-radius: 0.625rem;
+	-webkit-border-radius: 0.625rem;
+	-moz-border-radius: 0.625rem;
+	-ms-border-radius: 0.625rem;
+	-o-border-radius: 0.625rem;
+}
+
+audio::-webkit-media-controls-panel{
+	background-color:#b33030;
+}
+
 /* Join Page Styles */
 
 .centered-form {
@@ -102,7 +118,7 @@ button:disabled {
 	align-items: center;
 }
 
-.centered-form__box {
+.centered-form__box, .recording {
 	box-shadow: 0 0 1rem 0.0625rem #000;
 	background: #ffffff;
 	padding: 2.5rem;
@@ -147,6 +163,7 @@ button:disabled {
 	display: flex;
 	flex-direction: column;
 	max-height: 100vh;
+	position: relative;
 }
 
 .chat__messages {
@@ -175,14 +192,14 @@ button:disabled {
   font-size: 0.8rem;
 }
 
-.message__image img {
+.message__image img, .message__video video {
 	width: 10rem;
 	cursor: zoom-in;
-	animation: scaleDown 0.3s forwards;
-	-webkit-animation: scaleDown 0.3s forwards;
+	animation: scaleDown 0.1s forwards;
+	-webkit-animation: scaleDown 0.1s forwards;
 }
 
-.message__image--zoomed {
+.message__image--zoomed, .message__video--zoomed  {
 	width: 100vw;
 	height: 100vh;
 	height: 100vh;
@@ -197,7 +214,7 @@ button:disabled {
 	z-index: 100;
 }
 
-.message__image--zoomed img {
+.message__image--zoomed img,  .message__video--zoomed video {
 	width: 100%;
 	cursor: zoom-out;
 	animation: scaleUp 0.3s forwards;
@@ -215,6 +232,7 @@ button:disabled {
 	flex-shrink: 0;
 	margin-top: 1rem;
 	padding: 1.5rem;
+	position: relative;
 }
 
 .compose form {
@@ -228,7 +246,7 @@ button:disabled {
 	margin-right: 0.2rem;
 }
 
-.compose button {
+.compose button, .recording button {
 	width: 2.5rem;
 	height: 2.5rem;
 	font-size: 0.9rem;
@@ -238,7 +256,7 @@ button:disabled {
 	position: relative;
 }
 
-.compose button:active {
+.compose button:active, .recording button:active {
 	box-shadow: 0 0.075rem #591818;
 	transform: translateY(0.25rem);
 	-webkit-transform: translateY(0.25rem);
@@ -247,7 +265,7 @@ button:disabled {
 	-o-transform: translateY(0.25rem);
 }
 
-.compose button img {
+.compose button img, .recording button img {
 	width: 1.2rem;
 	vertical-align: middle;
 	filter: invert(98%) sepia(39%) saturate(264%) hue-rotate(236deg) brightness(115%) contrast(100%);
@@ -257,9 +275,27 @@ button:disabled {
 	visibility: visible;
 }
 
+.recording {
+	position: absolute;
+	top: 30%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	display: none;
+}
+
+.recording > img {
+	margin-bottom: 3rem;
+	width: 8rem;
+	animation: blinking 1s forwards infinite;
+	-webkit-animation: blinking 1s forwards infinite;
+}
+
 .tooltip {
   position: absolute;
-  box-shadow: none;
   background-color: #ffffff;
   font-size: 0.8rem;
 	color: #b33030;
@@ -275,7 +311,6 @@ button:disabled {
   -o-border-radius: 0.3rem;
   width: fit-content;
   height: fit-content;
-  white-space: nowrap;
 	visibility: hidden;
 }
 
@@ -336,5 +371,17 @@ button:disabled {
   } 
   100% {
     width: 10rem;
+  }
+}
+
+@keyframes blinking {
+	0%, 100% {
+    opacity: 1;
+  } 
+  20% {
+		opacity: 0;
+  }
+	50% {
+		opacity: 1;
   }
 }

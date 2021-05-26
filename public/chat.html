@@ -28,11 +28,33 @@
             <img src='/svg/image.svg' alt='upload image icon'/>
             <span class='tooltip'>upload image</span>
           </button>
-          <button id='record' aria-label='click to record and send a voice message'>
-            <img src='/svg/microphone.svg' alt='record icon'/>
-            <span class='tooltip'>record</span>
+          <button id='record-audio' aria-label='click to record and send a voice message'>
+            <img src='/svg/microphone.svg' alt='record audio icon'/>
+            <span class='tooltip'>record audio</span>
+          </button>
+          <button id='record-video' aria-label='click to record and send a video message'>
+            <img src='/svg/camera.svg' alt='record video icon'/>
+            <span class='tooltip'>record video</span>
           </button>
           <input type='file' id='upload-input'  accept='.gif, .jpeg, .jpg, .png, .svg'/>
+        </div>
+        <div class='recording'>
+          <img src='/svg/recording.svg' alt='recording icon' />
+          <div>
+            <button id='pause-recording' aria-label='click to pause recording'>
+              <img src='/svg/pause.svg' alt='pause recording icon'/>
+              <span class='tooltip'>pause</span>
+            </button>
+            <button id='resume-recording' aria-label='click to resume recording'>
+              <img src='/svg/resume.svg' alt='resume recording icon'/>
+              <span class='tooltip'>resume</span>
+            </button>
+            <button id='stop-recording' aria-label='click to stop recording'>
+              <img src='/svg/stop.svg' alt='stop recording icon'/>
+              <span class='tooltip'>stop </span>
+            </button>
+          </div>
+         
         </div>
       </div>
     </div>
@@ -64,7 +86,29 @@
             <span class='message__meta'>{{createdAt}}</span>
         </p>
         <div class='message__image'>
-          <img  src='{{imageSrc}}' />
+          <img src='{{imageSrc}}' />
+        </div>
+      </div>
+    </script>
+
+    <script id='audio-message-template' type='text/html'>
+      <div class='message {{#isSentMessage}} message__sent {{/isSentMessage}}'>
+        <p>
+            <span class='message__name'>{{username}}</span>
+            <span class='message__meta'>{{createdAt}}</span>
+        </p>
+        <audio class='message__audio' src='{{audioSrc}}' controls ></audio>
+      </div>
+    </script>
+
+    <script id='video-message-template' type='text/html'>
+      <div class='message {{#isSentMessage}} message__sent {{/isSentMessage}}'>
+        <p>
+            <span class='message__name'>{{username}}</span>
+            <span class='message__meta'>{{createdAt}}</span>
+        </p>
+        <div class='message__video' >
+          <video src='{{videoSrc}}' controls ></audio>
         </div>
       </div>
     </script>
