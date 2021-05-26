@@ -15,7 +15,7 @@
           <label>Your username</label>
           <input type='text' name='username' placeholder='Username' autocomplete='off' required oninvalid="this.setCustomValidity('Please enter username.')"/>
           <label>Choose a room</label>
-          <div id='room-selection' class='center-form__selection'></div>
+          <select id='selected-room' form='join-form' onchange='getSelectedRoom(event)'></select>
           <label for='room'>or type a new room to join in</label>
           <input id='room' type='text' name='room' placeholder='Room' autocomplete='off' required oninvalid="this.setCustomValidity('Please enter a room to join in.')"/>
           <button>Join</button>
@@ -23,14 +23,14 @@
       </div>
     </div>
 
-    <script id='room-selection-template' type='text/html'>
+   <!--  <script id='room-selection-template' type='text/html'>
       <select id='selected-room' form='join-form' onchange='getSelectedRoom(event)'>
           <option id='placeholder-select' value='' disabled selected>Select an existing room</option>
           {{#rooms}}
           <option value='{{.}}'>{{.}}</option>
           {{/rooms}}
       </select>
-    </script>
+    </script> -->
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js'></script>
