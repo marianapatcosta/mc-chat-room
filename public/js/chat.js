@@ -144,7 +144,7 @@ const onStopRecording = (isVideo = false) => {
 
 // socket handlers
 
-socket.on('message', ({ username: senderUsername, text, createdAt, src })  => {
+socket.on('message', ({ username: senderUsername, text, createdAt })  => {
   const html = Mustache.render(messageTemplate, {
     username: senderUsername,
     message: text,
