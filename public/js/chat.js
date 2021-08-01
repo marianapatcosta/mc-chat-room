@@ -58,26 +58,30 @@ const { username, room } =
 // helper methods 
 const isTouchDevice = () => matchMedia('(hover: none)').matches;
 
-const handleImageMessages = () => {
-  $imageMessages = document.getElementsByClassName('message__image');
-  const newImageElement = $imageMessages[$imageMessages.length -1];
-  newImageElement.addEventListener('click', () => {
+const onImageClick = (newImageElement) => {
     if (newImageElement.classList.contains('message__image--zoomed')) {
       return newImageElement.classList.remove('message__image--zoomed');
     }
     newImageElement.classList.add('message__image--zoomed');
-  });
+  }
+
+const handleImageMessages = () => {
+  $imageMessages = document.getElementsByClassName('message__image');
+  const newImageElement = $imageMessages[$imageMessages.length -1];
+  newImageElement.addEventListener('click', () => onImageClick(newImageElement));
 };
 
-const handleVideoMessages = () => {
-  $videoMessages = document.getElementsByClassName('message__video');
-  const newVideoElement = $videoMessages[$videoMessages.length -1];
-  newVideoElement.addEventListener('click', () => {
+const onVideoClick = (newVideoElement) => {
     if (newVideoElement.classList.contains('message__video--zoomed')) {
       return newVideoElement.classList.remove('message__video--zoomed');
     }
     newVideoElement.classList.add('message__video--zoomed');
-  });
+  }
+
+const handleVideoMessages = () => {
+  $videoMessages = document.getElementsByClassName('message__video');
+  const newVideoElement = $videoMessages[$videoMessages.length -1];
+  newVideoElement.addEventListener('click', () => onVideoClick(newVideoElement));
 };
 
 const handleInsertHtml = (html, isSender) => {
@@ -98,17 +102,17 @@ const getMedia = async (constraints) => {
 const stopStream = stream => stream.getTracks().forEach(track => track.stop());
 
 const onSwitchCamera = () => { 
-  $switchCameraButton.removeEventListener('click', onSwitchCamera);
   isFrontCamera = !isFrontCamera; 
   stopStream(mediaRecorder.stream);
   onRecordVideo();
+  $switchCameraButton.removeEventListener('click', onSwitchCamera);
 };
  
-onPauseMediaRecord = () => mediaRecorder.pause();
+const onPauseMediaRecord = () => mediaRecorder.pause();
 
-onResumeMediaRecord = () => mediaRecorder.resume();
+const onResumeMediaRecord = () => mediaRecorder.resume();
 
-onStopMediaRecord = () => mediaRecorder.stop();
+const onStopMediaRecord = () => mediaRecorder.stop();
 
 const onStartRecording = (isVideo) => {
   if (isTouchDevice() && isVideo) {
@@ -218,7 +222,7 @@ $pauseRecordingButton.addEventListener('click', onPauseMediaRecord);
 $resumeRecordingButton.addEventListener('click', onResumeMediaRecord);
 $stopRecordingButton.addEventListener('click', onStopMediaRecord);
 
-$messageForm.addEventListener('submit', event => {
+const onSendMessage = event => {
   event.preventDefault();
   $messageButton.setAttribute('disabled', 'disabled');
   const sentMessage = event.target.elements.message.value;
@@ -232,9 +236,11 @@ $messageForm.addEventListener('submit', event => {
       return alert(error);
     }
   });
-});
+}
 
-$sendLocationButton.addEventListener('click', () => {
+$messageForm.addEventListener('submit', onSendMessage);
+
+const onSendGeolocation = () => {
   if (!navigator.geolocation) {
     return alert('Geolocation is not supported by your browser!');
   }
@@ -259,13 +265,13 @@ $sendLocationButton.addEventListener('click', () => {
     },
     { timeout: 10000 }
   );
-});
+}
 
-$uploadButton.addEventListener('click', () => {
-  $uploadInput.click()
-});
+$sendLocationButton.addEventListener('click', onSendGeolocation);
 
-$uploadInput.addEventListener('change', (event) => {
+$uploadButton.addEventListener('click', () => $uploadInput.click());
+
+const onImageUpload = (event) => {
   if (!event.target.files[0]) return;
 
   const fileName = event.target.files[0].name;
@@ -279,9 +285,11 @@ $uploadInput.addEventListener('change', (event) => {
   const reader = new FileReader();
   reader.onloadend = () => socket.emit('sendImageMessage', reader.result);
   reader.readAsDataURL(event.target.files[0]);
-});
+}
 
-$recordAudioButton.addEventListener('click', async () => {
+$uploadInput.addEventListener('change', onImageUpload);
+
+const onRecordAudio =  async () => {
   const mediaStream = await getMedia({ audio: true });
   mediaRecorder = new MediaRecorder(mediaStream)
   const chunks = [];
@@ -299,7 +307,9 @@ $recordAudioButton.addEventListener('click', async () => {
     onStopRecording();
   };
   mediaRecorder.start();
-});
+}
+
+$recordAudioButton.addEventListener('click', onRecordAudio);
 
 const onRecordVideo = async () => {
   const constraints = isTouchDevice() ? {video: { facingMode: isFrontCamera ? 'user' : 'environment' }} : { video: true, audio: true }
