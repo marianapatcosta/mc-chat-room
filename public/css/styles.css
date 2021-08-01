@@ -74,6 +74,7 @@ button {
 
 button:hover {
   opacity: 0.75;
+  z-index: 1;
 }
 
 button:active {
